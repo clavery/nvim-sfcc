@@ -6,7 +6,7 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 
 ## Features
 
-- [x] [nvim-dap][1] extension that integrates the [Prophet][2] VSCode debug adapter into Neovim
+- [x] DEBUGGER: [nvim-dap][1] extension that integrates the [Prophet][2] VSCode debug adapter into Neovim
 
 ## TODO
 

@@ -68,7 +68,7 @@ Use your favorite plugin manager to install an configure plugin. For example, wi
 
 ## Usage
 
-Make sure you have a `dw.json` or `dw.js` file in your working directory. If `dw.js` is found it will be excuted using nodejs (via `node_path` configuration option) and the output will be parsed as JSON as if it was a `dw.json` file (this is the same behavior as Prophet). Note you can use the multiple instances convention in the style of [b2c-tools][4].
+Make sure you have a `dw.json` or `dw.js` file in your working directory. If `dw.js` is found it will be excuted using nodejs (via `node_path` configuration option) and the module exports will be parsed as JSON as if it was a `dw.json` file (this is the same behavior as Prophet). Note you can use the multiple instances convention in the style of [b2c-tools][4].
 
 ```json
 {

@@ -1,6 +1,72 @@
 ---@mod sfcc extend dap to support SFCC debugging, etc
 
+local PROPHET_VSIX =
+  "https://marketplace.visualstudio.com/_apis/public/gallery/publishers/SqrTT/vsextensions/prophet/1.4.40/vspackage"
+local PROPHET_VSIX_FILENAME = "SqrTT.prophet-1.4.40.vsix"
+local PROPHET_VSIX_DEBUG_ADAPTER = "extension/dist/mockDebug.js"
+
+-- download PROPHET_VSIX and extract it (it's a gzipped tarbal) to a neovim runtime share directory
+
 local M = {}
+
+local function ensure_prophet_debug_adapter()
+  local share_dir = vim.fn.stdpath("data") .. "/debug-adapters/prophet"
+  local vsix_path = share_dir .. "/" .. PROPHET_VSIX_FILENAME
+  local debug_adapter_path = share_dir .. "/" .. PROPHET_VSIX_DEBUG_ADAPTER
+
+  -- Check if debug adapter already exists
+  if vim.fn.filereadable(debug_adapter_path) == 1 then
+    return debug_adapter_path
+  end
+
+  -- Create directory if it doesn't exist
+  if vim.fn.isdirectory(share_dir) == 0 then
+    vim.fn.mkdir(share_dir, "p")
+  end
+
+  -- Download VSIX if it doesn't exist
+  if vim.fn.filereadable(vsix_path) == 0 then
+    vim.notify("[nvim-sfcc] Downloading Prophet Debug Adapter...")
+    local curl_cmd = string.format("curl -L -o %s %s", vim.fn.shellescape(vsix_path), vim.fn.shellescape(PROPHET_VSIX))
+
+    local output = vim.fn.system(curl_cmd)
+    if vim.v.shell_error ~= 0 then
+      vim.notify("[nvim-sfcc] Failed to download VSIX: " .. output, vim.log.levels.ERROR)
+      return
+    end
+  end
+
+  -- Extract VSIX (it's a tarball)
+  vim.notify("[nvim-sfcc] Extracting Prophet Debug Adapter...")
+  local tar_cmd = string.format("tar xzf %s -C %s", vim.fn.shellescape(vsix_path), vim.fn.shellescape(share_dir))
+
+  local output = vim.fn.system(tar_cmd)
+  if vim.v.shell_error ~= 0 then
+    vim.notify("[nvim-sfcc] Failed to extract VSIX: " .. output, vim.log.levels.ERROR)
+    return
+  end
+
+  -- Verify extraction
+  if vim.fn.filereadable(debug_adapter_path) == 0 then
+    vim.notify("[nvim-sfcc] Debug adapter not found after extraction", vim.log.levels.ERROR)
+    return
+  end
+
+  -- Optionally, remove the downloaded VSIX file
+  vim.fn.delete(vsix_path)
+
+  return debug_adapter_path
+end
+
+-- ensure we can actually install this ourselves
+local function check_requirements_for_download()
+  if vim.fn.executable("curl") == 0 then
+    error("curl is not installed")
+  end
+  if vim.fn.executable("tar") == 0 then
+    error("tar is not installed")
+  end
+end
 
 -- Where to find node
 M.node_path = "node"
@@ -100,14 +166,21 @@ function M.setup(opts)
   local dap = load_dap()
   opts = vim.tbl_extend("keep", opts or {}, default_opts)
   M.node_path = opts.node_path or M.node_path
+
   local prophet_path = opts.prophet_debug_adapter
-  assert(prophet_path, "[nvim-sfcc] prophetDebugAdapter option is required")
+  if opts.prophet_auto_download then
+    check_requirements_for_download()
+    prophet_path = ensure_prophet_debug_adapter()
+  end
+
+  assert(prophet_path, "[nvim-sfcc] prophet_debug_adapater or prophet_auto_download option is required")
 
   -- check if prophet_path is a file
   local stat = vim.loop.fs_stat(prophet_path)
   if not stat or stat.type ~= "file" then
     error("[nvim-sfcc] prophetDebugAdapter must be a valid file path")
   end
+
 
   dap.adapters.prophet = function(cb, config)
     local adapter = {
@@ -176,7 +249,7 @@ function M.setup(opts)
       cartridges = cartridges,
     })
     if err then
-      print("SFCC Debug Error", err)
+      vim.notify("SFCC Debug Error", err)
     end
   end
   dap.listeners.on_config["sfcc-nvim"] = function(config)

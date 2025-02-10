@@ -11,7 +11,6 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 ## TODO
 
 - [ ] better error handling!
-- [ ] auto-install Prophet (ala Mason)
 - [ ] better syntax support
 - [ ] language server auto config
 
@@ -31,31 +30,25 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 - [Neovim](https://neovim.io/)
 - [Node.js](https://nodejs.org/en/) (recommend v16)
 - [nvim-dap][1]
-- [Prophet][2]
 
 Optional:
 
 - [nvim-dap-ui][5] - this is the UI seen in the screenshot above
+- [Prophet][2] - this provides the debugger for SFCC. If requested this will be downloaded automatically.
 
 ### Plugin
 
-Checkout and build [prophet][2]. You can use any version of node that will successfully build this. v16 is recommended at this time.
-
-```sh
-git clone https://github.com/SqrTT/prophet/
-cd prophet
-npm install
-```
-
-Use your favorite plugin manager to install an configure plugin. For example, with lazy.nvim:
+Use your favorite plugin manager to install an configure plugin. You must specify one of `prophet_auto_download` or `prophet_debug_adapter`. For example, with lazy.nvim:
 
 ```lua
 { 
   "clavery/nvim-sfcc", 
   dependencies = {"mfussenegger/nvim-dap"},
   opts = { 
-    -- configure the path to the Prophet debug adapter you built above
-    prophet_debug_adapter = "/path/to/prophet/dist/mockDebug.js",
+    -- auto download the latest version of Prophet
+    prophet_auto_download = true
+    -- OR configure the path to the Prophet debug adapter you built yourself from source
+    -- prophet_debug_adapter = "/path/to/prophet/dist/mockDebug.js",
 
     -- (optional) configure to location to nodejs; default to `node` on your path
     node_path = "/path/to/node",

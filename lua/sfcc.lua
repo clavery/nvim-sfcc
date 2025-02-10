@@ -15,7 +15,7 @@ local function load_dap()
 	return dap
 end
 
-local function load_config()
+local function load_config(instance)
 	local dwjson = vim.fn.getcwd() .. "/dw.json"
 	local dwjs = vim.fn.getcwd() .. "/dw.js"
 
@@ -42,14 +42,25 @@ local function load_config()
 
 	local json = vim.fn.json_decode(content) or {}
 
-	if not json.active and json.configs then
+	if instance and json.name == instance then
+		return json
+	elseif instance and json.configs then
+		for _, config in ipairs(json.configs) do
+			if config.name == instance then
+				return config
+			end
+		end
+
+    -- no instance found
+    error(string.format("No instance found in dwjson config for %s", instance))
+	elseif not json.active and json.configs then
 		for _, config in ipairs(json.configs) do
 			if config.active then
 				return config
 			end
 		end
 	end
-	json.configs = nil
+  -- no other active found
 	return json
 end
 
@@ -134,18 +145,28 @@ function M.setup(opts)
 		---@field config ProphetConnectionConfig
 		---@field cartridges string[]
 
-		local dwjson = load_config()
+		-- print(vim.inspect(session))
+
+		local instance = nil
+		if session.config and session.config.sfcc then
+			instance = session.config.sfcc.instance
+		end
+
+		local dwjson = load_config(instance)
 		local cartridges = find_cartridges()
 
-    -- print inspect cartridges
-    print(vim.inspect(cartridges))
+    if session.config and session.config.sfcc then
+      dwjson = vim.tbl_extend("force", dwjson, session.config.sfcc)
+    end
 
-		local config = vim.tbl_extend("keep", {
+		local config = {
 			version = dwjson["code-version"],
 			hostname = dwjson.hostname,
 			password = dwjson.password,
 			username = dwjson.username,
-		}, session.sfcc or {})
+		}
+
+    -- print(vim.inspect(config))
 
 		-- send DebuggerConfig request
 		local err, result = session:request("DebuggerConfig", {

@@ -10,6 +10,7 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 
 ## TODO
 
+- [ ] better error handling!
 - [ ] auto-install Prophet (ala Mason)
 - [ ] better syntax support
 - [ ] language server auto config
@@ -72,15 +73,15 @@ Make sure you have a `dw.json` or `dw.js` file in your working directory. If `dw
 ```json
 {
   "name": "default",
-  "active": false,
-  "hostname": "abcd-002.dx.commercecloud.salesforce.com",
+  "active": true,
+  "hostname": "abcd-001.dx.commercecloud.salesforce.com",
   "username": "...",
   "password": "...",
   "code-version": "version1",
   "configs": [{
-    "name": "sandbox01",
-    "active": true,
-    "hostname": "abcd-001.dx.commercecloud.salesforce.com",
+    "name": "sandbox002",
+    "active": false,
+    "hostname": "abcd-002.dx.commercecloud.salesforce.com",
     "username": "...",
     "password": "...",
     "code-version": "version1",
@@ -101,9 +102,10 @@ Add at least 1 `.vscode/launch.json` configuration to your project (see that you
     {
       "type": "prophet",
       "request": "launch",
-      "name": "Attach to Sandbox abcd-002",
+      "name": "Attach to Sandbox abcd-002 alt Code Version",
       "sfcc": {
-        "instance": "sandbox01"
+        "instance": "sandbox002",
+        "code-version": "version2"
       }
     }
   ]

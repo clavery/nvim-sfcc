@@ -11,9 +11,8 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 ## TODO
 
 - [ ] auto-install Prophet (ala Mason)
-- [ ] syntax support
-- [ ] language server support
-- [ ] schema integration
+- [ ] better syntax support
+- [ ] language server auto config
 
 ### Out of Scope
 
@@ -21,6 +20,8 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
   - this is better handled by separate tools (see [sfcc-ci][3] or [b2c-tools][4]; b2c-tools has `code watch`, `code upload`, and `code download` commands)
 - log viewing/tailing
   - see [b2c-tools][4] for a `tail` command
+- SFCC types
+  - use nvim's LSP plugins and your `tsconfig.json` or `jsconfig.json` and add types from [https://github.com/SalesforceCommerceCloud/dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) or [https://github.com/openmindlab/sfcc-dts/](https://github.com/openmindlab/sfcc-dts/)
 
 ## Installation
 
@@ -53,10 +54,13 @@ Use your favorite plugin manager to install an configure plugin. For example, wi
   dependencies = {"mfussenegger/nvim-dap"},
   opts = { 
     -- configure the path to the Prophet debug adapter you built above
-    prophetDebugAdapter = "/path/to/prophet/dist/mockDebug.js",
+    prophet_debug_adapter = "/path/to/prophet/dist/mockDebug.js",
 
     -- (optional) configure to location to nodejs; default to `node` on your path
-    nodePath = "/path/to/node",
+    node_path = "/path/to/node",
+
+    -- (optional) include default Sandbox Attach configuration (in lieu of a .vscode/launch.json)
+    include_configs = false
   }
 }
 ```

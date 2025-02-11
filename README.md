@@ -156,6 +156,7 @@ be translated to a `@cartridges/*` path. You can use your `tsconfig.json` to con
 
 - Typescript < v5.0.0 is not supported
   - if you have typescript installed in your project the typescript-language-server use that version. Our SFCC resolver plugin is for TS 5 and above and won't be attached on older versions
+- `<isscript>` tags stop highlighting when a `<` char is encountered
 
 
 ## Support

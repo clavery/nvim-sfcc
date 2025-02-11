@@ -9,10 +9,13 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 - [x] DEBUGGER: [nvim-dap][1] extension that integrates the [Prophet][2] VSCode debug adapter into Neovim
 - [x] LSP SUPPORT: a typescript language server plugin that resolves `*/...` and `~/...` style imports
   - See [LSP Configuration](#lsp-configuration)] for recommended project configuration
+- [x] SYNTAX: basic ISML support
+  - [x] `<isscript>` tags are highlighted as JS
+  - [ ] unique ISML tag highlights
+  - [ ] inline expression support
 
 ## TODO
 
-- [ ] ISML tree-sitter support (right now ISML is marked as HTML)
 - [ ] Automatic cartridge discovery for LSP plugin
 
 ### Out of Scope

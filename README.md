@@ -7,12 +7,13 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 ## Features
 
 - [x] DEBUGGER: [nvim-dap][1] extension that integrates the [Prophet][2] VSCode debug adapter into Neovim
+- [x] LSP SUPPORT: a typescript language server plugin that resolves `*/...` and `~/...` style imports
+  - See [LSP Configuration](#lsp-configuration)] for recommended project configuration
 
 ## TODO
 
-- [ ] better error handling!
-- [ ] better syntax support
-- [ ] language server auto config
+- [ ] ISML tree-sitter support (right now ISML is marked as HTML)
+- [ ] Automatic cartridge discovery for LSP plugin
 
 ### Out of Scope
 
@@ -21,7 +22,7 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 - log viewing/tailing
   - see [b2c-tools][4] for a `tail` command
 - SFCC types
-  - use nvim's LSP plugins and your `tsconfig.json` or `jsconfig.json` and add types from [https://github.com/SalesforceCommerceCloud/dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) or [https://github.com/openmindlab/sfcc-dts/](https://github.com/openmindlab/sfcc-dts/)
+  - Use your `tsconfig.json` or `jsconfig.json` and add types from [https://github.com/SalesforceCommerceCloud/dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) or [https://github.com/openmindlab/sfcc-dts/](https://github.com/openmindlab/sfcc-dts/). See [LSP Configuration](#lsp-configuration)
 
 ## Installation
 
@@ -35,6 +36,7 @@ Optional:
 
 - [nvim-dap-ui][5] - this is the UI seen in the screenshot above
 - [Prophet][2] - this provides the debugger for SFCC. If requested this will be downloaded automatically.
+- [nvim-lspconfig][6] - this is used to provide LSP support
 
 ### Plugin
 
@@ -43,7 +45,7 @@ Use your favorite plugin manager to install an configure plugin. You must specif
 ```lua
 { 
   "clavery/nvim-sfcc", 
-  dependencies = {"mfussenegger/nvim-dap"},
+  dependencies = {"mfussenegger/nvim-dap", "neovim/nvim-lspconfig"},
   opts = { 
     -- auto download the latest version of Prophet
     prophet_auto_download = true
@@ -55,6 +57,9 @@ Use your favorite plugin manager to install an configure plugin. You must specif
 
     -- (optional) include default Sandbox Attach configuration (in lieu of a .vscode/launch.json)
     include_configs = false
+
+    -- configure nvim-lspconfig to include our resolver plugin
+    setup_lsp_config = true,
   }
 }
 ```
@@ -111,6 +116,44 @@ Then, start the debug adapter using the normal DAP commands. (see [nvim-dap][1] 
 :lua require('dap').continue()
 ```
 
+## LSP Configuration
+
+Requires: [nvim-lspconfig][6]
+
+This plugin will automatically configure the typescript language server using `nvim-lspconfig` (if installed) and include a plugin for resolving SFCC-style imports. `*/...` imports will
+be translated to a `@cartridges/*` path. You can use your `tsconfig.json` to configure where these should resolve to. For example here we configure a "cartridge path" to resolve `*/...` style imports to the app_mysite and app_storefront_base cartridges. This example also references the [dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) to provide SFCC API types. `~/...` style imports will be resolved by the plugin to the containing cartridge.
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": [
+      "node",
+      "axios",
+      "./tools/dw-api-types/dw/global.d.ts"
+    ],
+    "paths": {
+      "*": [
+        "dependencies/storefront-reference-architecture/cartridges/modules/*"
+      ],
+      "dw/*": [
+        "tools/dw-api-types/dw/*"
+      ],
+      "@cartridges/cartridge/*": [
+        "cartridges/app_mysite/cartridge/*",
+        "dependencies/storefront-reference-architecture/cartridges/app_storefront_base/cartridge/*"
+      ]
+    }
+  }
+}
+```
+
+
+## Issues
+
+- Typescript < v5.0.0 is not supported
+  - if you have typescript installed in your project the typescript-language-server use that version. Our SFCC resolver plugin is for TS 5 and above and won't be attached on older versions
+
 
 ## Support
 
@@ -128,3 +171,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 [3]: https://github.com/SalesforceCommerceCloud/sfcc-ci
 [4]: https://github.com/SalesforceCommerceCloud/b2c-tools
 [5]: https://github.com/rcarriga/nvim-dap-ui
+[6]: https://github.com/neovim/nvim-lspconfig
+

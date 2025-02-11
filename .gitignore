@@ -1,2 +1,7 @@
 tmp
 *.vsix
+
+node_modules
+
+dw.json
+

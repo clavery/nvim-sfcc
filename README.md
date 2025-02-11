@@ -139,9 +139,9 @@ be translated to a `@cartridges/*` path. You can use your `tsconfig.json` to con
       "dw/*": [
         "tools/dw-api-types/dw/*"
       ],
-      "@cartridges/cartridge/*": [
-        "cartridges/app_mysite/cartridge/*",
-        "dependencies/storefront-reference-architecture/cartridges/app_storefront_base/cartridge/*"
+      "@cartridges/*": [
+        "cartridges/app_mysite/*",
+        "dependencies/storefront-reference-architecture/cartridges/app_storefront_base/*"
       ]
     }
   }

@@ -295,9 +295,9 @@ function M.setup(opts)
             location = resolver_path,
           },
         },
-        tsserver = {
-          logVerbosity = "verbose",
-        },
+        -- tsserver = {
+        --   logVerbosity = "verbose",
+        -- },
       },
     })
   end

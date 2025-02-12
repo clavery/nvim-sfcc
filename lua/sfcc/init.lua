@@ -304,7 +304,9 @@ function M.setup(opts)
 end
 
 ---@class sfcc.setup.opts
----@field prophet_debug_adapter string Path to prophet debug adapter mockDebug.js
+---@field prophet_auto_download? boolean Automatically download Prophet Debug Adapter
+---@field prophet_debug_adapter? string Path to prophet debug adapter mockDebug.js
 ---@field node_path? string Path to node executable (default node)
 ---@field include_configs? boolean Add default configurations
+---@field setup_lsp_config? boolean Setup LSPconfig configurations for ts_ls
 return M

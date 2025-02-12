@@ -49,6 +49,8 @@ Use your favorite plugin manager to install an configure plugin. You must specif
 { 
   "clavery/nvim-sfcc", 
   dependencies = {"mfussenegger/nvim-dap", "neovim/nvim-lspconfig"},
+  ---@module "sfcc"
+  ---@type sfcc.setup.opts
   opts = { 
     -- auto download the latest version of Prophet
     prophet_auto_download = true
@@ -56,10 +58,10 @@ Use your favorite plugin manager to install an configure plugin. You must specif
     -- prophet_debug_adapter = "/path/to/prophet/dist/mockDebug.js",
 
     -- (optional) configure to location to nodejs; default to `node` on your path
-    node_path = "/path/to/node",
+    --node_path = "/path/to/node",
 
     -- (optional) include default Sandbox Attach configuration (in lieu of a .vscode/launch.json)
-    include_configs = false
+    --include_configs = false
 
     -- configure nvim-lspconfig to include our resolver plugin
     setup_lsp_config = true,

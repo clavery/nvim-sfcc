@@ -68,8 +68,19 @@ local function check_requirements_for_download()
   end
 end
 
+local function get_script_path()
+  local source = debug.getinfo(2, "S").source
+  if source:sub(1, 1) == "@" then
+    local file = source:sub(2)
+    return vim.fn.fnamemodify(file, ":p:h") .. "/"
+  end
+  error("Could not determine plugin root")
+end
+
+
 -- Where to find node
 M.node_path = "node"
+M.resolver_plugin_path = vim.fn.fnamemodify(get_script_path() .. "../../js", ":p")
 
 local default_opts = {
   node_path = M.node_path,
@@ -161,15 +172,6 @@ local function find_cartridges()
 
   scan_dir(vim.fn.getcwd())
   return project_dirs
-end
-
-local function get_script_path()
-  local source = debug.getinfo(2, "S").source
-  if source:sub(1, 1) == "@" then
-    local file = source:sub(2)
-    return vim.fn.fnamemodify(file, ":p:h") .. "/"
-  end
-  error("Could not determine plugin root")
 end
 
 ---@param opts? sfcc.setup.opts
@@ -274,31 +276,6 @@ function M.setup(opts)
       type = "prophet",
       request = "launch",
       name = "Attach to Sandbox",
-    })
-  end
-
-  if opts.setup_lsp_config then
-    -- pcall require lspconfig and notify error if not available
-    local ok, lspconfig = pcall(require, "lspconfig")
-    if not ok then
-      vim.notify("[nvim-sfcc] lspconfig is required to setup LSP configurations", vim.log.levels.ERROR)
-      return
-    end
-
-    local resolver_path = vim.fn.fnamemodify(get_script_path() .. "../js", ":p")
-
-    lspconfig.ts_ls.setup({
-      init_options = {
-        plugins = {
-          {
-            name = "sfcc-resolver",
-            location = resolver_path,
-          },
-        },
-        -- tsserver = {
-        --   logVerbosity = "verbose",
-        -- },
-      },
     })
   end
 end

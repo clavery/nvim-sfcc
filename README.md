@@ -62,9 +62,6 @@ Use your favorite plugin manager to install an configure plugin. You must specif
 
     -- (optional) include default Sandbox Attach configuration (in lieu of a .vscode/launch.json)
     --include_configs = false
-
-    -- configure nvim-lspconfig to include our resolver plugin
-    setup_lsp_config = true,
   }
 }
 ```
@@ -123,10 +120,27 @@ Then, start the debug adapter using the normal DAP commands. (see [nvim-dap][1] 
 
 ## LSP Configuration
 
-Requires: [nvim-lspconfig][6]
+Requires: [nvim-lspconfig][6] or another TS LSP client.
 
-This plugin will automatically configure the typescript language server using `nvim-lspconfig` (if installed) and include a plugin for resolving SFCC-style imports. `*/...` imports will
-be translated to a `@cartridges/*` path. You can use your `tsconfig.json` to configure where these should resolve to. For example here we configure a "cartridge path" to resolve `*/...` style imports to the app_mysite and app_storefront_base cartridges. This example also references the [dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) to provide SFCC API types. `~/...` style imports will be resolved by the plugin to the containing cartridge.
+This plugin includes a typescript-language-server plugin for resolving SFCC-style imports. `*/...` imports will
+be translated to a `@cartridges/*` path.  To configure for nvim-lspconfig:
+
+```lua
+local lspconfig = require('lspconfig')
+lspconfig.ts_ls.setup({
+  --- ...
+  init_options = {
+    plugins = {
+      {
+        name = "sfcc-resolver",
+        location = require('sfcc').resolver_plugin_path
+      },
+    },
+  },
+})
+```
+
+You can use your `tsconfig.json` to configure where these should resolve to. For example here we configure a "cartridge path" to resolve `*/...` style imports to the app_mysite and app_storefront_base cartridges. This example also references the [dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) to provide SFCC API types. `~/...` style imports will be resolved by the plugin to the containing cartridge.
 
 ```json
 {

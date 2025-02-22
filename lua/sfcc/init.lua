@@ -38,7 +38,7 @@ local function ensure_prophet_debug_adapter()
 
   -- Extract VSIX (it's a zip file)
   vim.notify("[nvim-sfcc] Extracting Prophet Debug Adapter...")
-  local zip_cmd = string.format("unzip %s -d %s", vim.fn.shellescape(vsix_path), PROPHET_VSIX_DEBUG_ADAPTER, share_dir)
+  local zip_cmd = string.format("unzip %s -d %s", vim.fn.shellescape(vsix_path), share_dir)
 
   local output = vim.fn.system(zip_cmd)
   if vim.v.shell_error ~= 0 then

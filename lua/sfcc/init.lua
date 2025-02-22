@@ -27,7 +27,7 @@ local function ensure_prophet_debug_adapter()
   -- Download VSIX if it doesn't exist
   if vim.fn.filereadable(vsix_path) == 0 then
     vim.notify("[nvim-sfcc] Downloading Prophet Debug Adapter...")
-    local curl_cmd = string.format("curl -L -o %s %s", vim.fn.shellescape(vsix_path), vim.fn.shellescape(PROPHET_VSIX))
+    local curl_cmd = string.format("curl --compressed -L -o %s %s", vim.fn.shellescape(vsix_path), vim.fn.shellescape(PROPHET_VSIX))
 
     local output = vim.fn.system(curl_cmd)
     if vim.v.shell_error ~= 0 then
@@ -36,11 +36,11 @@ local function ensure_prophet_debug_adapter()
     end
   end
 
-  -- Extract VSIX (it's a tarball)
+  -- Extract VSIX (it's a zip file)
   vim.notify("[nvim-sfcc] Extracting Prophet Debug Adapter...")
-  local tar_cmd = string.format("tar xzf %s -C %s", vim.fn.shellescape(vsix_path), vim.fn.shellescape(share_dir))
+  local zip_cmd = string.format("unzip %s -d %s", vim.fn.shellescape(vsix_path), PROPHET_VSIX_DEBUG_ADAPTER, share_dir)
 
-  local output = vim.fn.system(tar_cmd)
+  local output = vim.fn.system(zip_cmd)
   if vim.v.shell_error ~= 0 then
     vim.notify("[nvim-sfcc] Failed to extract VSIX: " .. output, vim.log.levels.ERROR)
     return

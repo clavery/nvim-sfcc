@@ -8,7 +8,7 @@ A Neovim plugin for Salesforce Commerce Cloud (SFCC) development.
 
 - [x] DEBUGGER: [nvim-dap][1] extension that integrates the [Prophet][2] VSCode debug adapter into Neovim
 - [x] LSP SUPPORT: a typescript language server plugin that resolves `*/...` and `~/...` style imports
-  - See [LSP Configuration](#lsp-configuration)] for recommended project configuration
+  - See [LSP Configuration](#lsp-configuration) for recommended project configuration
 - [x] SYNTAX: basic ISML support
   - [x] `<isscript>` tags are highlighted as JS
   - [ ] unique ISML tag highlights
@@ -140,12 +140,31 @@ lspconfig.ts_ls.setup({
 })
 ```
 
+Or with newer (>0.11) neovim:
+
+```lua
+vim.lsp.config("ts_ls", {
+  init_options = {
+    plugins = {
+      {
+        name = "sfcc-resolver",
+        location = require("sfcc").resolver_plugin_path,
+      },
+    },
+    tsserver = {
+      logVerbosity = "verbose",
+    },
+  },
+})
+```
+
 You can use your `tsconfig.json` to configure where these should resolve to. For example here we configure a "cartridge path" to resolve `*/...` style imports to the app_mysite and app_storefront_base cartridges. This example also references the [dw-api-types](https://github.com/SalesforceCommerceCloud/dw-api-types) to provide SFCC API types. `~/...` style imports will be resolved by the plugin to the containing cartridge.
 
 ```json
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "allowJs": true,
     "types": [
       "node",
       "axios",
@@ -162,8 +181,13 @@ You can use your `tsconfig.json` to configure where these should resolve to. For
         "cartridges/app_mysite/*",
         "dependencies/storefront-reference-architecture/cartridges/app_storefront_base/*"
       ]
-    }
+    },
   }
+  "include": [
+    "cartridges/app_mysite/**/*",
+    "cartridges/app_storefront_base/**/*",
+    "tools/dw-api-types/dw/**/*"
+  ]
 }
 ```
 
